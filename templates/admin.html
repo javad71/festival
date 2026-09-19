@@ -1,20 +1,43 @@
 {% extends "base.html" %}
-{% block title %}مدیریت جشنواره{% endblock %}
+{% block title %}داشبورد مدیریت | جشنواره{% endblock %}
 {% block content %}
-<section class="page-hero"><div class="container"><span class="eyebrow">مدیریت</span><h1>داشبورد جشنواره</h1><p>مدیریت و بررسی آثار ارسال‌شده.</p></div></section>
-<section class="section">
-<div class="container">
-<div class="admin-warning">این صفحه در نسخه نمونه احراز هویت ندارد. قبل از استفاده در اینترنت، حتماً احراز هویت مدیر اضافه کنید.</div>
-<div class="admin-stats"><div><strong>{{ submissions|length }}</strong><span>اثر ارسال‌شده</span></div><div><strong>{{ winners|length }}</strong><span>برگزیده</span></div><div><strong>{{ categories|length }}</strong><span>محور</span></div></div>
-<div class="table-wrap"><table><thead><tr><th>شناسه</th><th>نام</th><th>محور</th><th>عنوان</th><th>وضعیت</th><th>فایل</th></tr></thead><tbody>
-{% for item in submissions %}
-<tr><td>#{{ item.id }}</td><td>{{ item.full_name }}</td><td>{{ item.category_slug }}</td><td>{{ item.title }}</td><td>
-<form method="post" action="/admin/submissions/{{ item.id }}/status"><select name="status" onchange="this.form.submit()">
-<option value="pending" {% if item.status == 'pending' %}selected{% endif %}>در انتظار</option>
-<option value="approved" {% if item.status == 'approved' %}selected{% endif %}>تأیید</option>
-<option value="rejected" {% if item.status == 'rejected' %}selected{% endif %}>رد</option>
-</select></form></td><td><a href="{{ item.file_path }}" target="_blank">مشاهده</a></td></tr>
-{% else %}<tr><td colspan="6">هنوز اثری ارسال نشده است.</td></tr>{% endfor %}
-</tbody></table></div>
+<section class="page-hero admin-hero"><div class="container"><div class="admin-topline"><div><span class="eyebrow">مدیریت جشنواره</span><h1>داشبورد کنترل</h1><p>بررسی آثار، جستجو، آمار و مدیریت برگزیدگان.</p></div><form method="post" action="/admin/logout"><button class="btn btn-ghost" type="submit">خروج</button></form></div></div></section>
+<section class="section"><div class="container">
+<div class="admin-stats">
+<div><strong>{{ stats.total }}</strong><span>کل آثار</span></div><div><strong>{{ stats.pending }}</strong><span>در انتظار بررسی</span></div><div><strong>{{ stats.approved }}</strong><span>تأیید شده</span></div><div><strong>{{ stats.rejected }}</strong><span>رد شده</span></div><div><strong>{{ stats.winners }}</strong><span>برگزیده</span></div>
+</div>
+
+<div class="admin-panel">
+<div class="section-heading"><div><span class="eyebrow">مدیریت آثار</span><h2>جستجو و فیلتر</h2></div></div>
+<form class="admin-filters" method="get" action="/admin">
+<input name="q" value="{{ q }}" placeholder="نام، تلفن، عنوان یا نام فایل...">
+<select name="status"><option value="all" {% if status == 'all' %}selected{% endif %}>همه وضعیت‌ها</option><option value="pending" {% if status == 'pending' %}selected{% endif %}>در انتظار</option><option value="approved" {% if status == 'approved' %}selected{% endif %}>تأیید</option><option value="rejected" {% if status == 'rejected' %}selected{% endif %}>رد</option></select>
+<select name="category"><option value="all">همه محورها</option>{% for c in categories %}<option value="{{ c.slug }}" {% if category == c.slug %}selected{% endif %}>{{ c.title }}</option>{% endfor %}</select>
+<button class="btn btn-primary" type="submit">جستجو</button><a class="btn btn-ghost" href="/admin">پاک کردن</a>
+</form>
+<div class="table-wrap"><table><thead><tr><th>شناسه</th><th>شرکت‌کننده</th><th>محور</th><th>عنوان</th><th>تاریخ</th><th>وضعیت</th><th>فایل</th></tr></thead><tbody>
+{% for item in submissions %}<tr>
+<td>#{{ item.id }}</td><td><strong>{{ item.full_name }}</strong><small>{{ item.phone }}</small></td><td>{{ item.category_slug }}</td><td>{{ item.title }}</td><td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') if item.created_at else '-' }}</td>
+<td><form method="post" action="/admin/submissions/{{ item.id }}/status"><input type="hidden" name="csrf" value="{{ csrf_token }}"><select name="status" onchange="this.form.submit()"><option value="pending" {% if item.status == 'pending' %}selected{% endif %}>در انتظار</option><option value="approved" {% if item.status == 'approved' %}selected{% endif %}>تأیید</option><option value="rejected" {% if item.status == 'rejected' %}selected{% endif %}>رد</option></select></form></td>
+<td><a class="table-link" href="{{ item.file_path }}" target="_blank" rel="noopener">مشاهده ↗</a></td>
+</tr>{% else %}<tr><td colspan="7" class="table-empty">اثری با این فیلتر پیدا نشد.</td></tr>{% endfor %}
+</tbody></table></div></div>
+
+<div class="admin-panel winners-admin"><div class="section-heading"><div><span class="eyebrow">نتایج</span><h2>مدیریت برگزیدگان</h2></div></div>
+<form class="winner-admin-form" method="post" action="/admin/winners/create" enctype="multipart/form-data">
+<input type="hidden" name="csrf" value="{{ csrf_token }}">
+<label>نام برگزیده<input name="full_name" required maxlength="200"></label>
+<label>محور<select name="category_slug" required>{% for c in categories %}<option value="{{ c.slug }}">{{ c.title }}</option>{% endfor %}</select></label>
+<label>رتبه / عنوان<input name="rank_title" placeholder="نفر اول" required maxlength="100"></label>
+<label>عنوان اثر<input name="work_title" required maxlength="250"></label>
+<label class="winner-desc">توضیحات<textarea name="description" rows="3" maxlength="2000"></textarea></label>
+<label>تصویر اثر<input type="file" name="image" accept=".jpg,.jpeg,.png,.webp"></label>
+<button class="btn btn-primary" type="submit">افزودن برگزیده</button>
+</form>
+<div class="winner-admin-list">
+{% for winner in winners %}<details class="winner-admin-row"><summary><div><strong>{{ winner.full_name }}</strong><span>{{ winner.rank_title }} · {{ winner.work_title }}</span></div><div class="admin-row-actions"><span class="mini-btn">ویرایش</span></div></summary>
+<form class="winner-edit-form" method="post" action="/admin/winners/{{ winner.id }}/edit" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{ csrf_token }}"><label>نام<input name="full_name" value="{{ winner.full_name }}" required></label><label>محور<select name="category_slug">{% for c in categories %}<option value="{{ c.slug }}" {% if c.slug == winner.category_slug %}selected{% endif %}>{{ c.title }}</option>{% endfor %}</select></label><label>رتبه<input name="rank_title" value="{{ winner.rank_title }}" required></label><label>عنوان اثر<input name="work_title" value="{{ winner.work_title }}" required></label><label>توضیحات<textarea name="description" rows="2">{{ winner.description }}</textarea></label><label>تصویر جدید<input type="file" name="image" accept=".jpg,.jpeg,.png,.webp"></label><button class="mini-btn" type="submit">ذخیره تغییرات</button></form>
+<div class="admin-row-actions"><form method="post" action="/admin/winners/{{ winner.id }}/toggle"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="mini-btn" type="submit">{{ 'مخفی' if winner.published else 'انتشار' }}</button></form><form method="post" action="/admin/winners/{{ winner.id }}/delete" onsubmit="return confirm('این برگزیده حذف شود؟')"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="mini-btn danger" type="submit">حذف</button></form></div></details>{% else %}<p class="muted">هنوز برگزیده‌ای ثبت نشده است.</p>{% endfor %}
+</div></div>
 </div></section>
 {% endblock %}

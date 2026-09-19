@@ -4,7 +4,9 @@
 <section class="page-hero"><div class="container"><span class="eyebrow">افتخارهای جشنواره</span><h1>برگزیدگان</h1><p>پس از پایان جشنواره، آثار و نام برگزیدگان در این بخش منتشر می‌شود.</p></div></section>
 <section class="section">
 <div class="container">
-{% if winners %}
+{% if festival_phase != 'winners' %}
+<div class="empty-state"><div>⏳</div><h2>نتایج پس از پایان جشنواره منتشر می‌شود</h2><p>پس از پایان رسمی جشنواره، اسامی و آثار برگزیده در همین صفحه نمایش داده خواهند شد.</p><a class="btn btn-primary" href="/festival">آشنایی با جشنواره</a></div>
+{% elif winners %}
 <div class="winner-grid">
 {% for winner in winners %}
 <article class="winner-card">

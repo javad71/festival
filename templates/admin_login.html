@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}ورود مدیر | جشنواره{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">مدیریت امن</span><h1>ورود مدیر جشنواره</h1><p>برای دسترسی به داشبورد، اطلاعات مدیر را وارد کنید.</p></div></section>
+<section class="section"><div class="container narrow"><form class="submission-form admin-login-form" method="post" action="/admin/login"><input type="hidden" name="csrf" value="{{ csrf_token }}">
+{% if error %}<div class="admin-error">{{ error }}</div>{% endif %}
+<label>نام کاربری<input name="username" autocomplete="username" required></label>
+<label>رمز عبور<input type="password" name="password" autocomplete="current-password" required></label>
+<button class="btn btn-primary btn-full" type="submit">ورود به داشبورد</button>
+</form></div></section>
+{% endblock %}

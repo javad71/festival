@@ -9,19 +9,19 @@
             <h1>جشنواره<br><span>نفس‌های آینده</span></h1>
             <p>لحظه‌های ناب زندگی را برای فردایی روشن‌تر روایت کنیم؛ از حس شیرین مادری تا لبخند یک نوزاد، آغاز یک زندگی مشترک و گرمای خانواده.</p>
             <div class="hero-actions">
-                <a href="/submit" class="btn btn-primary">ثبت‌نام و ارسال اثر ↗</a>
+                <a href="{% if festival_phase == 'winners' %}/winners{% else %}/submit{% endif %}" class="btn btn-primary">{% if festival_phase == 'winners' %}مشاهده برگزیدگان ↗{% else %}ثبت‌نام و ارسال اثر ↗{% endif %}</a>
                 <a href="/festival" class="btn btn-ghost">آشنایی با جشنواره</a>
             </div>
         </div>
-        <div class="countdown-card">
-            <div class="countdown-title">⏳ زمان آغاز جشنواره</div>
+        <div class="countdown-card festival-state-card" data-phase="{{ festival_phase }}" data-start="{{ festival_start }}" data-end="{{ festival_end }}">
+            <div class="countdown-title">{% if festival_phase == 'countdown' %}⏳ زمان آغاز جشنواره{% elif festival_phase == 'festival' %}🎉 جشنواره در حال برگزاری است{% else %}🏆 نتایج جشنواره{% endif %}</div>
             <div class="countdown" id="countdown" data-target="1405-10-01T00:00:00+03:30">
                 <div><strong id="days">--</strong><span>روز</span></div>
                 <div><strong id="hours">--</strong><span>ساعت</span></div>
                 <div><strong id="minutes">--</strong><span>دقیقه</span></div>
                 <div><strong id="seconds">--</strong><span>ثانیه</span></div>
             </div>
-            <div class="countdown-date">۱ دی ۱۴۰۵</div>
+            <div class="countdown-date">{% if festival_phase == 'countdown' %}آغاز: ۱ دی ۱۴۰۵{% elif festival_phase == 'festival' %}از {{ festival_start }} تا {{ festival_end }}{% else %}برگزیدگان در دسترس هستند{% endif %}</div>
         </div>
     </div>
 </section>
@@ -49,7 +49,8 @@
         <div class="section-heading"><div><span class="eyebrow">الهام بگیرید</span><h2>پوسترهای جشنواره</h2></div></div>
         <div class="poster-grid">
             {% for poster in posters %}
-            <article class="poster-card">
+            <article class="poster-card gallery-item" tabindex="0" data-gallery-src="{{ poster.image_path }}" data-gallery-title="{{ poster.title }}" data-gallery-subtitle="{{ poster.subtitle }}">
+                <button class="poster-open" type="button" aria-label="نمایش {{ poster.title }}">⛶</button>
                 <img src="{{ poster.image_path }}" alt="{{ poster.title }}">
                 <div class="poster-caption"><strong>{{ poster.title }}</strong><span>{{ poster.subtitle }}</span></div>
             </article>

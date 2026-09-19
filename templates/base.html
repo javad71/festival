@@ -72,9 +72,16 @@
 </footer>
 
 <div class="toast" id="toast"></div>
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="بستن">×</button>
+  <button class="lightbox-prev" id="lightboxPrev" aria-label="قبلی">‹</button>
+  <div class="lightbox-content"><img id="lightboxImage" alt=""><div id="lightboxCaption"></div></div>
+  <button class="lightbox-next" id="lightboxNext" aria-label="بعدی">›</button>
+</div>
 <script src="/static/js/theme.js"></script>
 <script src="/static/js/navigation.js"></script>
 <script src="/static/js/app.js"></script>
+<script src="/static/js/gallery.js"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,8 +1,16 @@
-__pycache__/
-*.pyc
-.venv/
+# Environments
+.env
+.venv
+env/
 venv/
+ENV/
+env.bak/
+venv.bak/
+
+__pycache__/
+*.py[cod]
 .env
 festival.db
 uploads/*
 !uploads/.gitkeep
+*.log

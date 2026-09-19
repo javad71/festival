@@ -27,6 +27,7 @@
     </div>
     <label>عنوان اثر *<input name="title" required maxlength="250"></label>
     <label>توضیحات اثر<textarea name="description" rows="5" maxlength="3000"></textarea></label>
+    <div class="upload-preview" id="uploadPreview" hidden><div class="preview-media" id="previewMedia"></div><div><strong id="previewTitle"></strong><span id="previewMeta"></span></div></div>
     <label class="upload-box">
         <span>📎</span><strong>فایل اثر را انتخاب کنید</strong>
         <small>تصویر، ویدئو یا PDF — حداکثر ۵۰ مگابایت</small>
@@ -34,8 +35,9 @@
         <em id="fileName">هنوز فایلی انتخاب نشده است</em>
     </label>
     <label class="checkbox-label"><input type="checkbox" name="rules_accepted" value="true" required> قوانین جشنواره را مطالعه کرده‌ام و می‌پذیرم.</label>
+    <div class="upload-progress" id="uploadProgress" hidden><div class="progress-track"><span id="progressBar"></span></div><span id="progressText">۰٪</span></div>
     <button class="btn btn-primary btn-full" type="submit" id="submitBtn">ثبت و ارسال اثر</button>
-    <div id="formMessage" class="form-message"></div>
+    <div id="formMessage" class="form-message" role="status"></div>
 </form>
 <aside class="submission-side">
     <div class="side-card"><span>🔒</span><h3>امنیت فایل</h3><p>فایل با نام تصادفی ذخیره می‌شود و نام فایل اصلی در دیتابیس نگهداری می‌شود.</p></div>

@@ -1,36 +1,7 @@
-const fileInput = document.getElementById("fileInput");
-const fileName = document.getElementById("fileName");
-const form = document.getElementById("submissionForm");
-const message = document.getElementById("formMessage");
-const button = document.getElementById("submitBtn");
-
-fileInput?.addEventListener("change", () => {
-    fileName.textContent = fileInput.files?.[0]?.name || "هنوز فایلی انتخاب نشده است";
-});
-
-form?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    message.textContent = "";
-    button.disabled = true;
-    button.textContent = "در حال ارسال...";
-
-    try {
-        const response = await fetch("/api/submissions", {
-            method: "POST",
-            body: new FormData(form)
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.detail || "خطایی رخ داد.");
-        message.textContent = data.message;
-        message.style.color = "var(--teal)";
-        form.reset();
-        fileName.textContent = "هنوز فایلی انتخاب نشده است";
-        window.showToast("اثر شما با موفقیت ثبت شد.");
-    } catch (error) {
-        message.textContent = error.message;
-        message.style.color = "#d9534f";
-    } finally {
-        button.disabled = false;
-        button.textContent = "ثبت و ارسال اثر";
-    }
-});
+(() => {
+const fileInput = document.getElementById('fileInput'); const fileName = document.getElementById('fileName'); const form = document.getElementById('submissionForm'); const message = document.getElementById('formMessage'); const button = document.getElementById('submitBtn'); const progress = document.getElementById('uploadProgress'); const bar = document.getElementById('progressBar'); const progressText = document.getElementById('progressText'); const preview = document.getElementById('uploadPreview'); const media = document.getElementById('previewMedia'); const title = document.getElementById('previewTitle'); const meta = document.getElementById('previewMeta');
+const maxBytes = 50 * 1024 * 1024;
+const formatSize = bytes => { if (bytes < 1024*1024) return `${Math.round(bytes/1024)} KB`; return `${(bytes/1024/1024).toFixed(1)} MB`; };
+fileInput?.addEventListener('change', () => { const file = fileInput.files?.[0]; fileName.textContent = file?.name || 'هنوز فایلی انتخاب نشده است'; if (!file) { preview.hidden = true; return; } if (file.size > maxBytes) { message.textContent = 'حجم فایل بیشتر از ۵۰ مگابایت است.'; message.style.color='#d9534f'; fileInput.value=''; preview.hidden=true; return; } title.textContent=file.name; meta.textContent=`${formatSize(file.size)} · ${file.type || 'فایل'}`; media.innerHTML=''; if (file.type.startsWith('image/')) { const img=document.createElement('img'); img.src=URL.createObjectURL(file); media.appendChild(img); } else if (file.type.startsWith('video/')) { const video=document.createElement('video'); video.src=URL.createObjectURL(file); video.controls=true; media.appendChild(video); } else { media.textContent='📄'; } preview.hidden=false; });
+form?.addEventListener('submit', event => { event.preventDefault(); const xhr=new XMLHttpRequest(); const data=new FormData(form); message.textContent=''; button.disabled=true; button.textContent='در حال ارسال...'; progress.hidden=false; bar.style.width='0%'; progressText.textContent='۰٪'; xhr.open('POST','/api/submissions'); xhr.upload.onprogress=e=>{ if(!e.lengthComputable)return; const p=Math.round(e.loaded/e.total*100); bar.style.width=`${p}%`; progressText.textContent=`${p}٪`; }; xhr.onload=()=>{ let result={}; try{result=JSON.parse(xhr.responseText)}catch{} if(xhr.status>=200&&xhr.status<300&&result.success){ message.textContent=result.message; message.style.color='var(--teal)'; form.reset(); fileName.textContent='هنوز فایلی انتخاب نشده است'; preview.hidden=true; window.showToast('اثر شما با موفقیت ثبت شد.'); } else { message.textContent=result.detail||'خطایی در ثبت اثر رخ داد.'; message.style.color='#d9534f'; } button.disabled=false; button.textContent='ثبت و ارسال اثر'; setTimeout(()=>{progress.hidden=true},1000); }; xhr.onerror=()=>{message.textContent='ارتباط با سرور برقرار نشد.'; message.style.color='#d9534f'; button.disabled=false; button.textContent='ثبت و ارسال اثر';}; xhr.send(data); });
+})();

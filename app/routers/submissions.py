@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import Submission, Category
 from ..services.uploads import save_upload
+from ..services.festival import festival_phase
 
 router = APIRouter(prefix="/api/submissions", tags=["submissions"])
 
@@ -21,6 +22,9 @@ async def create_submission(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
+    if festival_phase() == "winners":
+        raise HTTPException(400, "مهلت ارسال آثار به پایان رسیده است.")
+
     if rules_accepted.lower() not in {"true", "1", "on", "yes"}:
         raise HTTPException(400, "پذیرش قوانین جشنواره الزامی است.")
 
