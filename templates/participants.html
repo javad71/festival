@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}شرایط شرکت | نفس‌های آینده{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">مشارکت برای همه</span><h1>چه کسانی می‌توانند شرکت کنند؟</h1><p>هرکس که داستانی از امید، خانواده و آینده برای روایت دارد.</p></div></section>
+<section class="section"><div class="container participant-large-grid">
+{% for group in participant_groups %}
+<article class="participant-large"><div class="big-icon">{{ group.icon }}</div><div><h2>{{ group.title }}</h2><p>{{ group.description }}</p></div></article>
+{% endfor %}
+</div></section>
+<section class="section section-soft"><div class="container narrow"><h2>چند نکته مهم</h2><ul class="check-list"><li>شرکت در جشنواره با مطالعه و پذیرش قوانین انجام می‌شود.</li><li>برای افراد زیر سن قانونی، رضایت والد یا سرپرست قانونی ضروری است.</li><li>برای هر محور، فایل و مشخصات اثر را جداگانه ارسال کنید.</li></ul><a class="btn btn-primary" href="/submit">ارسال اثر</a></div></section>
+{% endblock %}

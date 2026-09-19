@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#356b72"/><stop offset="1" stop-color="#8dbfae"/></linearGradient>
+</defs>
+<rect width="600" height="800" rx="30" fill="url(#bg)"/>
+<circle cx="490" cy="115" r="75" fill="#fff" opacity=".16"/>
+<circle cx="115" cy="690" r="115" fill="#fff" opacity=".09"/>
+<path d="M300 535c-70-52-128-91-128-174 0-53 77-80 128-10 51-70 128-43 128 10 0 83-58 122-128 174z" fill="#fff" opacity=".88"/>
+<path d="M300 480V260M300 335c-54-45-100-31-126-2M300 365c54-45 100-31 126-2" stroke="#f4a62a" stroke-width="13" fill="none" stroke-linecap="round"/>
+<text x="300" y="100" text-anchor="middle" font-family="Tahoma, sans-serif" font-size="28" font-weight="700" fill="#fff">جشنواره</text>
+<text x="300" y="150" text-anchor="middle" font-family="Tahoma, sans-serif" font-size="43" font-weight="800" fill="#fff">نفس‌های آینده</text>
+<text x="300" y="690" text-anchor="middle" font-family="Tahoma, sans-serif" font-size="27" font-weight="700" fill="#fff">امن‌ترین پناه</text>
+<text x="300" y="735" text-anchor="middle" font-family="Tahoma, sans-serif" font-size="20" fill="#fff">خانواده</text>
+</svg>

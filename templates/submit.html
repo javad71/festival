@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}ارسال اثر | نفس‌های آینده{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">ثبت اثر</span><h1>اثر خود را برای ما بفرستید</h1><p>فرم زیر را با دقت تکمیل کنید. فایل شما پس از ثبت، برای بررسی جشنواره ذخیره می‌شود.</p></div></section>
+<section class="section"><div class="container form-layout">
+<form id="submissionForm" class="submission-form" enctype="multipart/form-data">
+    <div class="form-row">
+        <label>نام و نام خانوادگی *<input name="full_name" required maxlength="200"></label>
+        <label>شماره تماس *<input name="phone" required maxlength="50" inputmode="tel"></label>
+    </div>
+    <div class="form-row">
+        <label>ایمیل<input type="email" name="email" maxlength="320"></label>
+        <label>شهر<input name="city" maxlength="100"></label>
+    </div>
+    <div class="form-row">
+        <label>گروه سنی
+            <select name="age_group">
+                <option value="">انتخاب کنید</option><option>کودک</option><option>نوجوان</option><option>جوان</option><option>بزرگسال</option><option>سالمند</option>
+            </select>
+        </label>
+        <label>محور جشنواره *
+            <select name="category_slug" required>
+                <option value="">انتخاب محور</option>
+                {% for category in categories %}<option value="{{ category.slug }}">{{ category.title }}</option>{% endfor %}
+            </select>
+        </label>
+    </div>
+    <label>عنوان اثر *<input name="title" required maxlength="250"></label>
+    <label>توضیحات اثر<textarea name="description" rows="5" maxlength="3000"></textarea></label>
+    <label class="upload-box">
+        <span>📎</span><strong>فایل اثر را انتخاب کنید</strong>
+        <small>تصویر، ویدئو یا PDF — حداکثر ۵۰ مگابایت</small>
+        <input type="file" name="file" id="fileInput" required accept=".jpg,.jpeg,.png,.webp,.mp4,.mov,.webm,.pdf">
+        <em id="fileName">هنوز فایلی انتخاب نشده است</em>
+    </label>
+    <label class="checkbox-label"><input type="checkbox" name="rules_accepted" value="true" required> قوانین جشنواره را مطالعه کرده‌ام و می‌پذیرم.</label>
+    <button class="btn btn-primary btn-full" type="submit" id="submitBtn">ثبت و ارسال اثر</button>
+    <div id="formMessage" class="form-message"></div>
+</form>
+<aside class="submission-side">
+    <div class="side-card"><span>🔒</span><h3>امنیت فایل</h3><p>فایل با نام تصادفی ذخیره می‌شود و نام فایل اصلی در دیتابیس نگهداری می‌شود.</p></div>
+    <div class="side-card"><span>📋</span><h3>قبل از ارسال</h3><p>محور درست، مشخصات تماس و قوانین اختصاصی محور انتخابی را بررسی کنید.</p></div>
+</aside>
+</div></section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/upload.js"></script>{% endblock %}

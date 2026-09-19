@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}جشنواره نفس‌های آینده | صفحه اصلی{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-art"></div>
+    <div class="container hero-content">
+        <div class="hero-copy">
+            <span class="eyebrow">جشنواره ملی هنری و فرهنگی</span>
+            <h1>جشنواره<br><span>نفس‌های آینده</span></h1>
+            <p>لحظه‌های ناب زندگی را برای فردایی روشن‌تر روایت کنیم؛ از حس شیرین مادری تا لبخند یک نوزاد، آغاز یک زندگی مشترک و گرمای خانواده.</p>
+            <div class="hero-actions">
+                <a href="/submit" class="btn btn-primary">ثبت‌نام و ارسال اثر ↗</a>
+                <a href="/festival" class="btn btn-ghost">آشنایی با جشنواره</a>
+            </div>
+        </div>
+        <div class="countdown-card">
+            <div class="countdown-title">⏳ زمان آغاز جشنواره</div>
+            <div class="countdown" id="countdown" data-target="1405-10-01T00:00:00+03:30">
+                <div><strong id="days">--</strong><span>روز</span></div>
+                <div><strong id="hours">--</strong><span>ساعت</span></div>
+                <div><strong id="minutes">--</strong><span>دقیقه</span></div>
+                <div><strong id="seconds">--</strong><span>ثانیه</span></div>
+            </div>
+            <div class="countdown-date">۱ دی ۱۴۰۵</div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="categories">
+    <div class="container">
+        <div class="section-heading">
+            <div><span class="eyebrow">راه‌های روایت</span><h2>محورهای جشنواره</h2></div>
+            <a href="/rules" class="text-link">مشاهده قوانین ←</a>
+        </div>
+        <div class="category-grid">
+            {% for category in categories %}
+            <a class="category-card" href="/rules#{{ category.slug }}">
+                <div class="category-icon">{{ category.icon }}</div>
+                <h3>{{ category.title }}</h3>
+                <p>{{ category.description }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section section-soft">
+    <div class="container">
+        <div class="section-heading"><div><span class="eyebrow">الهام بگیرید</span><h2>پوسترهای جشنواره</h2></div></div>
+        <div class="poster-grid">
+            {% for poster in posters %}
+            <article class="poster-card">
+                <img src="{{ poster.image_path }}" alt="{{ poster.title }}">
+                <div class="poster-caption"><strong>{{ poster.title }}</strong><span>{{ poster.subtitle }}</span></div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="story-section">
+    <div class="container story-grid">
+        <div>
+            <span class="eyebrow">چرا نفس‌های آینده؟</span>
+            <h2>هر آینده‌ای، از یک لحظه کوچک شروع می‌شود.</h2>
+            <p>یک نگاه مادر به نوزادش، دست‌هایی که برای همیشه کنار هم قرار می‌گیرند، خانه‌ای که امن‌ترین پناه است و خنده کودکان در کنار پدربزرگ؛ این‌ها همان نفس‌هایی هستند که آینده را می‌سازند.</p>
+            <a href="/submit" class="btn btn-primary">داستان خود را ثبت کنید</a>
+        </div>
+        <div class="quote-card">
+            <span>❝</span>
+            <p>با هم، نفس‌های آینده را به تصویر بکشیم...</p>
+            <small>جشنواره نفس‌های آینده</small>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-heading"><div><span class="eyebrow">همه دعوت‌اند</span><h2>چه کسانی می‌توانند شرکت کنند؟</h2></div><a href="/participants" class="text-link">جزئیات ←</a></div>
+        <div class="participant-grid">
+            {% for group in participant_groups %}
+            <article class="info-card"><div class="big-icon">{{ group.icon }}</div><h3>{{ group.title }}</h3><p>{{ group.description }}</p></article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section section-soft">
+    <div class="container">
+        <div class="section-heading"><div><span class="eyebrow">قدردانی از نگاه شما</span><h2>جوایز جشنواره</h2></div></div>
+        <div class="prize-grid">
+            {% for prize in prizes %}
+            <article class="prize-card"><div class="prize-icon">{{ prize.icon }}</div><h3>{{ prize.title }}</h3><p>{{ prize.description }}</p></article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/countdown.js"></script>
+{% endblock %}

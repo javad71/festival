@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}برگزیدگان | نفس‌های آینده{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">افتخارهای جشنواره</span><h1>برگزیدگان</h1><p>پس از پایان جشنواره، آثار و نام برگزیدگان در این بخش منتشر می‌شود.</p></div></section>
+<section class="section">
+<div class="container">
+{% if winners %}
+<div class="winner-grid">
+{% for winner in winners %}
+<article class="winner-card">
+    {% if winner.image_path %}<img src="{{ winner.image_path }}" alt="{{ winner.work_title }}">{% else %}<div class="winner-placeholder">🏆</div>{% endif %}
+    <div class="winner-body"><span class="rank">{{ winner.rank_title }}</span><h2>{{ winner.full_name }}</h2><h3>{{ winner.work_title }}</h3><p>{{ winner.description }}</p></div>
+</article>
+{% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><div>🏆</div><h2>برگزیدگان به‌زودی معرفی می‌شوند</h2><p>بعد از پایان جشنواره، نتایج رسمی در همین صفحه منتشر خواهد شد.</p><a class="btn btn-primary" href="/submit">شرکت در جشنواره</a></div>
+{% endif %}
+</div>
+</section>
+{% endblock %}

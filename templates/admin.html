@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}مدیریت جشنواره{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">مدیریت</span><h1>داشبورد جشنواره</h1><p>مدیریت و بررسی آثار ارسال‌شده.</p></div></section>
+<section class="section">
+<div class="container">
+<div class="admin-warning">این صفحه در نسخه نمونه احراز هویت ندارد. قبل از استفاده در اینترنت، حتماً احراز هویت مدیر اضافه کنید.</div>
+<div class="admin-stats"><div><strong>{{ submissions|length }}</strong><span>اثر ارسال‌شده</span></div><div><strong>{{ winners|length }}</strong><span>برگزیده</span></div><div><strong>{{ categories|length }}</strong><span>محور</span></div></div>
+<div class="table-wrap"><table><thead><tr><th>شناسه</th><th>نام</th><th>محور</th><th>عنوان</th><th>وضعیت</th><th>فایل</th></tr></thead><tbody>
+{% for item in submissions %}
+<tr><td>#{{ item.id }}</td><td>{{ item.full_name }}</td><td>{{ item.category_slug }}</td><td>{{ item.title }}</td><td>
+<form method="post" action="/admin/submissions/{{ item.id }}/status"><select name="status" onchange="this.form.submit()">
+<option value="pending" {% if item.status == 'pending' %}selected{% endif %}>در انتظار</option>
+<option value="approved" {% if item.status == 'approved' %}selected{% endif %}>تأیید</option>
+<option value="rejected" {% if item.status == 'rejected' %}selected{% endif %}>رد</option>
+</select></form></td><td><a href="{{ item.file_path }}" target="_blank">مشاهده</a></td></tr>
+{% else %}<tr><td colspan="6">هنوز اثری ارسال نشده است.</td></tr>{% endfor %}
+</tbody></table></div>
+</div></section>
+{% endblock %}
