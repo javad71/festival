@@ -47,3 +47,17 @@ docker compose up -d --build
 ```
 
 `SESSION_HTTPS_ONLY=true` فقط زمانی فعال باشد که سایت واقعاً پشت HTTPS سرو شود.
+
+## Winner selection workflow
+
+From the admin dashboard, approve a submission and then select it under **انتخاب و مدیریت برگزیدگان**. The winner is created from that submission automatically:
+
+- participant name is reused
+- category is reused
+- work title is reused
+- the original uploaded file is reused (no second upload)
+- the original description is used unless the admin enters replacement text
+- a preview is shown before confirmation
+- the source submission ID is stored so the same submission cannot be selected twice
+
+Published winners are visible immediately on `/winners` and in the home-page winner preview by default. Set `WINNERS_VISIBLE_BEFORE_END=false` in `.env` if public winner visibility should wait until the festival end date.

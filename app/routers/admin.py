@@ -57,6 +57,14 @@ def dashboard(request: Request, db: Session = Depends(get_db), q: str = "", stat
     submissions = db.scalars(stmt).all()
     categories = db.scalars(select(Category).order_by(Category.id)).all()
     winners = db.scalars(select(Winner).order_by(Winner.id.desc())).all()
+    # Only approved submissions are offered as winner candidates. A submission can
+    # be selected once; its existing uploaded file is reused automatically.
+    used_submission_ids = set(db.scalars(select(Winner.source_submission_id).where(Winner.source_submission_id.is_not(None))).all())
+    winner_candidates = db.scalars(
+        select(Submission)
+        .where(Submission.status == "approved", ~Submission.id.in_(used_submission_ids) if used_submission_ids else True)
+        .order_by(Submission.id.desc())
+    ).all()
     stats = {
         "total": db.query(Submission).count(),
         "pending": db.query(Submission).filter(Submission.status == "pending").count(),
@@ -64,7 +72,7 @@ def dashboard(request: Request, db: Session = Depends(get_db), q: str = "", stat
         "rejected": db.query(Submission).filter(Submission.status == "rejected").count(),
         "winners": db.query(Winner).count(),
     }
-    context = {"request": request, "submissions": submissions, "categories": categories, "winners": winners, "stats": stats, "q": q, "status": status, "category": category, "csrf_token": csrf_token(request)}
+    context = {"request": request, "submissions": submissions, "categories": categories, "winners": winners, "winner_candidates": winner_candidates, "stats": stats, "q": q, "status": status, "category": category, "csrf_token": csrf_token(request)}
     return request.app.state.templates.TemplateResponse(request=request, name="admin.html", context=context)
 
 @router.post("/submissions/{submission_id}/status", dependencies=[Depends(require_admin)])
@@ -78,16 +86,36 @@ def update_status(request: Request, submission_id: int, status: str = Form(...),
     return RedirectResponse(url="/admin", status_code=303)
 
 @router.post("/winners/create", dependencies=[Depends(require_admin)])
-async def create_winner(
-    request: Request, csrf: str = Form(...), full_name: str = Form(...), category_slug: str = Form(...), rank_title: str = Form(...), work_title: str = Form(...),
-    description: str = Form(""), image: UploadFile | None = File(None), db: Session = Depends(get_db)
+def create_winner(
+    request: Request,
+    csrf: str = Form(...),
+    submission_id: int = Form(...),
+    rank_title: str = Form(...),
+    description: str = Form(""),
+    db: Session = Depends(get_db),
 ):
     verify_csrf(request, csrf)
-    image_path = None
-    if image and image.filename:
-        image_path, _ = await save_image_upload(image)
-    winner = Winner(full_name=full_name.strip(), category_slug=category_slug, rank_title=rank_title.strip(), work_title=work_title.strip(), description=description.strip(), image_path=image_path, published=True)
-    db.add(winner); db.commit()
+    submission = db.get(Submission, submission_id)
+    if not submission or submission.status != "approved":
+        raise HTTPException(status_code=400, detail="اثر انتخاب‌شده باید تأیید شده باشد.")
+
+    existing = db.scalar(select(Winner).where(Winner.source_submission_id == submission.id))
+    if existing:
+        raise HTTPException(status_code=409, detail="این اثر قبلاً به عنوان برگزیده ثبت شده است.")
+
+    winner = Winner(
+        source_submission_id=submission.id,
+        full_name=submission.full_name.strip(),
+        category_slug=submission.category_slug,
+        rank_title=rank_title.strip(),
+        work_title=submission.title.strip(),
+        description=(description.strip() or (submission.description or "").strip()),
+        # Reuse the exact file already uploaded by the participant. No second upload.
+        image_path=submission.file_path,
+        published=True,
+    )
+    db.add(winner)
+    db.commit()
     return RedirectResponse("/admin", status_code=303)
 
 @router.post("/winners/{winner_id}/edit", dependencies=[Depends(require_admin)])

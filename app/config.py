@@ -20,6 +20,8 @@ ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.
 
 FESTIVAL_START_DATE = os.getenv("FESTIVAL_START_DATE", "2026-12-22")
 FESTIVAL_END_DATE = os.getenv("FESTIVAL_END_DATE", "2026-12-29")
+# Published winners can be previewed immediately. Set false to hide them until the festival ends.
+WINNERS_VISIBLE_BEFORE_END = os.getenv("WINNERS_VISIBLE_BEFORE_END", "true").lower() == "true"
 
 ALLOWED_EXTENSIONS = {
     "image": {".jpg", ".jpeg", ".png", ".webp"},

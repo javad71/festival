@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 import jdatetime
-from ..config import APP_NAME
+from ..config import APP_NAME, WINNERS_VISIBLE_BEFORE_END
 from ..database import get_db
 from ..models import Category, Poster, Prize, ParticipantGroup, SocialLink, Winner, Submission
 from ..services.festival import festival_context
@@ -21,10 +21,15 @@ def common_context(db: Session, request: Request) -> dict:
         "prizes": db.scalars(select(Prize).order_by(Prize.sort_order, Prize.id)).all(),
         "participant_groups": db.scalars(select(ParticipantGroup).order_by(ParticipantGroup.id)).all(),
         "social_links": db.scalars(select(SocialLink).order_by(SocialLink.id)).all(),
-        "winners": db.scalars(select(Winner).where(Winner.published.is_(True)).order_by(Winner.id.desc())).all(),
         "jalali_today": jalali_now_text(),
     }
     context.update(festival_context())
+    winners = db.scalars(select(Winner).where(Winner.published.is_(True)).order_by(Winner.id.desc())).all()
+    if context["festival_phase"] == "winners" or WINNERS_VISIBLE_BEFORE_END:
+        context["winners"] = winners
+    else:
+        context["winners"] = []
+    context["winners_visible_before_end"] = WINNERS_VISIBLE_BEFORE_END
     return context
 
 @router.get("/", response_class=HTMLResponse)

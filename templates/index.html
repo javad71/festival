@@ -9,7 +9,7 @@
             <h1>جشنواره<br><span>نفس‌های آینده</span></h1>
             <p>لحظه‌های ناب زندگی را برای فردایی روشن‌تر روایت کنیم؛ از حس شیرین مادری تا لبخند یک نوزاد، آغاز یک زندگی مشترک و گرمای خانواده.</p>
             <div class="hero-actions">
-                <a href="{% if festival_phase == 'winners' %}/winners{% else %}/submit{% endif %}" class="btn btn-primary">{% if festival_phase == 'winners' %}مشاهده برگزیدگان ↗{% else %}ثبت‌نام و ارسال اثر ↗{% endif %}</a>
+                <a href="{% if winners %}/winners{% else %}/submit{% endif %}" class="btn btn-primary">{% if winners %}مشاهده برگزیدگان ↗{% else %}ثبت‌نام و ارسال اثر ↗{% endif %}</a>
                 <a href="/festival" class="btn btn-ghost">آشنایی با جشنواره</a>
             </div>
         </div>
@@ -25,6 +25,25 @@
         </div>
     </div>
 </section>
+
+{% if winners %}
+<section class="section winners-preview-section">
+    <div class="container">
+        <div class="section-heading"><div><span class="eyebrow">نتایج منتشرشده</span><h2>برگزیدگان جشنواره</h2></div><a href="/winners" class="text-link">مشاهده همه ←</a></div>
+        <div class="winner-grid">
+        {% for winner in winners[:3] %}
+        <article class="winner-card">
+            {% if winner.image_path %}
+                {% set ext = winner.image_path.rsplit('.', 1)[-1].lower() %}
+                {% if ext in ['jpg','jpeg','png','webp','gif'] %}<img src="{{ winner.image_path }}" alt="{{ winner.work_title }}">{% elif ext in ['mp4','mov','webm'] %}<video class="winner-video" src="{{ winner.image_path }}" controls preload="metadata"></video>{% else %}<div class="winner-placeholder">📄</div>{% endif %}
+            {% else %}<div class="winner-placeholder">🏆</div>{% endif %}
+            <div class="winner-body"><span class="rank">{{ winner.rank_title }}</span><h2>{{ winner.full_name }}</h2><h3>{{ winner.work_title }}</h3></div>
+        </article>
+        {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
 <section class="section" id="categories">
     <div class="container">

@@ -78,3 +78,5 @@ class Winner(Base):
     description: Mapped[str] = mapped_column(Text, default="")
     image_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
     published: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Original submission selected by the admin. Nullable to preserve older manually-created winners.
+    source_submission_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)

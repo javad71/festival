@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}داشبورد مدیریت | جشنواره{% endblock %}
+
 {% block content %}
 <section class="page-hero admin-hero"><div class="container"><div class="admin-topline"><div><span class="eyebrow">مدیریت جشنواره</span><h1>داشبورد کنترل</h1><p>بررسی آثار، جستجو، آمار و مدیریت برگزیدگان.</p></div><form method="post" action="/admin/logout"><button class="btn btn-ghost" type="submit">خروج</button></form></div></div></section>
 <section class="section"><div class="container">
@@ -23,21 +24,100 @@
 </tr>{% else %}<tr><td colspan="7" class="table-empty">اثری با این فیلتر پیدا نشد.</td></tr>{% endfor %}
 </tbody></table></div></div>
 
-<div class="admin-panel winners-admin"><div class="section-heading"><div><span class="eyebrow">نتایج</span><h2>مدیریت برگزیدگان</h2></div></div>
-<form class="winner-admin-form" method="post" action="/admin/winners/create" enctype="multipart/form-data">
+<div class="admin-panel winners-admin">
+<div class="section-heading"><div><span class="eyebrow">نتایج</span><h2>انتخاب و مدیریت برگزیدگان</h2><p class="muted">یک اثر تأییدشده را انتخاب کنید؛ نام، محور، عنوان و فایل اثر به‌صورت خودکار از همان ارسال استفاده می‌شود.</p></div></div>
+<form class="winner-admin-form winner-select-form" method="post" action="/admin/winners/create">
 <input type="hidden" name="csrf" value="{{ csrf_token }}">
-<label>نام برگزیده<input name="full_name" required maxlength="200"></label>
-<label>محور<select name="category_slug" required>{% for c in categories %}<option value="{{ c.slug }}">{{ c.title }}</option>{% endfor %}</select></label>
-<label>رتبه / عنوان<input name="rank_title" placeholder="نفر اول" required maxlength="100"></label>
-<label>عنوان اثر<input name="work_title" required maxlength="250"></label>
-<label class="winner-desc">توضیحات<textarea name="description" rows="3" maxlength="2000"></textarea></label>
-<label>تصویر اثر<input type="file" name="image" accept=".jpg,.jpeg,.png,.webp"></label>
-<button class="btn btn-primary" type="submit">افزودن برگزیده</button>
+<label class="winner-submission-field">اثر تأییدشده
+<select name="submission_id" id="winnerSubmission" required>
+<option value="">— انتخاب اثر —</option>
+{% for item in winner_candidates %}
+<option value="{{ item.id }}" data-name="{{ item.full_name|e }}" data-category="{{ item.category_slug|e }}" data-title="{{ item.title|e }}" data-description="{{ (item.description or '')|e }}" data-file="{{ item.file_path|e }}" data-filename="{{ item.original_filename|e }}">#{{ item.id }} — {{ item.full_name }} — {{ item.title }}</option>
+{% endfor %}
+</select>
+</label>
+<label>رتبه / عنوان
+<input name="rank_title" placeholder="نفر اول" required maxlength="100">
+</label>
+<label class="winner-desc">توضیحات تکمیلی
+<textarea name="description" id="winnerDescription" rows="3" maxlength="2000" placeholder="در صورت نیاز توضیح متفاوتی برای معرفی برگزیده بنویسید."></textarea>
+</label>
+<div class="winner-source-preview" id="winnerSourcePreview" hidden>
+<div class="winner-preview-media" id="winnerPreviewMedia"></div>
+<div class="winner-preview-meta"><strong id="winnerPreviewName"></strong><span id="winnerPreviewTitle"></span><small id="winnerPreviewFile"></small></div>
+</div>
+<div class="winner-auto-fields">
+<span><b>شرکت‌کننده:</b> <span id="winnerAutoName">—</span></span>
+<span><b>محور:</b> <span id="winnerAutoCategory">—</span></span>
+<span><b>عنوان اثر:</b> <span id="winnerAutoTitle">—</span></span>
+</div>
+<button class="btn btn-primary" type="submit" {% if not winner_candidates %}disabled{% endif %}>ثبت برگزیده</button>
 </form>
+{% if not winner_candidates %}<p class="muted winner-no-candidates">در حال حاضر اثر تأییدشده‌ای برای انتخاب وجود ندارد؛ یا همه آثار تأییدشده قبلاً برگزیده شده‌اند.</p>{% endif %}
 <div class="winner-admin-list">
-{% for winner in winners %}<details class="winner-admin-row"><summary><div><strong>{{ winner.full_name }}</strong><span>{{ winner.rank_title }} · {{ winner.work_title }}</span></div><div class="admin-row-actions"><span class="mini-btn">ویرایش</span></div></summary>
-<form class="winner-edit-form" method="post" action="/admin/winners/{{ winner.id }}/edit" enctype="multipart/form-data"><input type="hidden" name="csrf" value="{{ csrf_token }}"><label>نام<input name="full_name" value="{{ winner.full_name }}" required></label><label>محور<select name="category_slug">{% for c in categories %}<option value="{{ c.slug }}" {% if c.slug == winner.category_slug %}selected{% endif %}>{{ c.title }}</option>{% endfor %}</select></label><label>رتبه<input name="rank_title" value="{{ winner.rank_title }}" required></label><label>عنوان اثر<input name="work_title" value="{{ winner.work_title }}" required></label><label>توضیحات<textarea name="description" rows="2">{{ winner.description }}</textarea></label><label>تصویر جدید<input type="file" name="image" accept=".jpg,.jpeg,.png,.webp"></label><button class="mini-btn" type="submit">ذخیره تغییرات</button></form>
-<div class="admin-row-actions"><form method="post" action="/admin/winners/{{ winner.id }}/toggle"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="mini-btn" type="submit">{{ 'مخفی' if winner.published else 'انتشار' }}</button></form><form method="post" action="/admin/winners/{{ winner.id }}/delete" onsubmit="return confirm('این برگزیده حذف شود؟')"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="mini-btn danger" type="submit">حذف</button></form></div></details>{% else %}<p class="muted">هنوز برگزیده‌ای ثبت نشده است.</p>{% endfor %}
+{% for winner in winners %}
+<details class="winner-admin-row">
+<summary><div><strong>{{ winner.full_name }}</strong><span>{{ winner.rank_title }} · {{ winner.work_title }}{% if winner.source_submission_id %} · ارسال #{{ winner.source_submission_id }}{% endif %}</span></div><div class="admin-row-actions"><span class="mini-btn">ویرایش</span></div></summary>
+{% if winner.image_path %}<div class="admin-winner-current-media">
+{% set ext = winner.image_path.rsplit('.', 1)[-1].lower() %}
+{% if ext in ['jpg','jpeg','png','webp','gif'] %}<img src="{{ winner.image_path }}" alt="{{ winner.work_title }}">{% elif ext in ['mp4','mov','webm'] %}<video src="{{ winner.image_path }}" controls preload="metadata"></video>{% else %}<a class="table-link" href="{{ winner.image_path }}" target="_blank" rel="noopener">مشاهده فایل اثر ↗</a>{% endif %}
+</div>{% endif %}
+<form class="winner-edit-form" method="post" action="/admin/winners/{{ winner.id }}/edit" enctype="multipart/form-data">
+<input type="hidden" name="csrf" value="{{ csrf_token }}">
+<label>نام<input name="full_name" value="{{ winner.full_name }}" required></label>
+<label>محور<select name="category_slug">{% for c in categories %}<option value="{{ c.slug }}" {% if c.slug == winner.category_slug %}selected{% endif %}>{{ c.title }}</option>{% endfor %}</select></label>
+<label>رتبه<input name="rank_title" value="{{ winner.rank_title }}" required></label>
+<label>عنوان اثر<input name="work_title" value="{{ winner.work_title }}" required></label>
+<label>توضیحات<textarea name="description" rows="2">{{ winner.description }}</textarea></label>
+<label>جایگزینی فایل (اختیاری)<input type="file" name="image" accept=".jpg,.jpeg,.png,.webp,.gif,.mp4,.mov,.webm"></label>
+<button class="mini-btn" type="submit">ذخیره تغییرات</button>
+</form>
+<div class="admin-row-actions"><form method="post" action="/admin/winners/{{ winner.id }}/toggle"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="mini-btn" type="submit">{{ 'مخفی' if winner.published else 'انتشار' }}</button></form><form method="post" action="/admin/winners/{{ winner.id }}/delete" onsubmit="return confirm('این برگزیده حذف شود؟')"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="mini-btn danger" type="submit">حذف</button></form></div>
+</details>
+{% else %}<p class="muted">هنوز برگزیده‌ای ثبت نشده است.</p>{% endfor %}
 </div></div>
 </div></section>
+{% endblock %}
+{% block scripts %}
+<script>
+(() => {
+  const select = document.getElementById('winnerSubmission');
+  if (!select) return;
+  const preview = document.getElementById('winnerSourcePreview');
+  const media = document.getElementById('winnerPreviewMedia');
+  const name = document.getElementById('winnerPreviewName');
+  const title = document.getElementById('winnerPreviewTitle');
+  const file = document.getElementById('winnerPreviewFile');
+  const autoName = document.getElementById('winnerAutoName');
+  const autoCategory = document.getElementById('winnerAutoCategory');
+  const autoTitle = document.getElementById('winnerAutoTitle');
+  const description = document.getElementById('winnerDescription');
+  function update() {
+    const option = select.options[select.selectedIndex];
+    if (!option || !option.value) {
+      preview.hidden = true; media.innerHTML = ''; name.textContent = ''; title.textContent = ''; file.textContent = '';
+      autoName.textContent = '—'; autoCategory.textContent = '—'; autoTitle.textContent = '—';
+      return;
+    }
+    const src = option.dataset.file || '';
+    const ext = src.split('.').pop().toLowerCase();
+    if (['jpg','jpeg','png','webp','gif'].includes(ext)) {
+      media.innerHTML = `<img src="${src}" alt="پیش‌نمایش اثر">`;
+    } else if (['mp4','mov','webm'].includes(ext)) {
+      media.innerHTML = `<video src="${src}" controls preload="metadata"></video>`;
+    } else {
+      media.innerHTML = '<span>📄</span>';
+    }
+    name.textContent = option.dataset.name || '';
+    title.textContent = option.dataset.title || '';
+    file.textContent = option.dataset.filename || '';
+    autoName.textContent = option.dataset.name || '—';
+    autoCategory.textContent = option.dataset.category || '—';
+    autoTitle.textContent = option.dataset.title || '—';
+    if (!description.value.trim()) description.value = option.dataset.description || '';
+    preview.hidden = false;
+  }
+  select.addEventListener('change', update);
+})();
+</script>
 {% endblock %}
