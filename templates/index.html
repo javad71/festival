@@ -9,8 +9,13 @@
             <h1>جشنواره<br><span>نفس‌های آینده</span></h1>
             <p>لحظه‌های ناب زندگی را برای فردایی روشن‌تر روایت کنیم؛ از حس شیرین مادری تا لبخند یک نوزاد، آغاز یک زندگی مشترک و گرمای خانواده.</p>
             <div class="hero-actions">
-                <a href="{% if winners %}/winners{% else %}/submit{% endif %}" class="btn btn-primary">{% if winners %}مشاهده برگزیدگان ↗{% else %}ثبت‌نام و ارسال اثر ↗{% endif %}</a>
+                <a href="/submit" class="btn btn-primary">همین حالا اثرم را می‌فرستم ↗</a>
                 <a href="/festival" class="btn btn-ghost">آشنایی با جشنواره</a>
+            </div>
+            <div class="hero-proof">
+                <span class="hero-proof-dot"></span>
+                <strong>{{ festival_stats.submissions }}</strong> اثر تاکنون ثبت شده
+                <a href="#festival-stats">مشاهده آمار ←</a>
             </div>
         </div>
         <div class="countdown-card festival-state-card" data-phase="{{ festival_phase }}" data-start="{{ festival_start }}" data-end="{{ festival_end }}">
@@ -23,6 +28,82 @@
             </div>
             <div class="countdown-date">{% if festival_phase == 'countdown' %}آغاز: ۱ دی ۱۴۰۵{% elif festival_phase == 'festival' %}از {{ festival_start }} تا {{ festival_end }}{% else %}برگزیدگان در دسترس هستند{% endif %}</div>
         </div>
+    </div>
+</section>
+
+<section class="stats-section" id="festival-stats" aria-labelledby="stats-title">
+    <div class="container">
+        <div class="stats-intro">
+            <div>
+                <span class="eyebrow">نبض جشنواره</span>
+                <h2 id="stats-title">صدای شما، هر روز بزرگ‌تر می‌شود</h2>
+                <p>این آمار به‌صورت زنده از آثار ثبت‌شده در سامانه محاسبه می‌شود. شما هم با ارسال اثر، بخشی از این جریان باشید.</p>
+            </div>
+            <a href="/submit" class="btn btn-primary stats-cta">من هم شرکت می‌کنم ↗</a>
+        </div>
+
+        <div class="stats-grid" id="publicStats" data-stats-url="/api/stats">
+            <article class="stat-card stat-featured">
+                <div class="stat-icon">🎨</div>
+                <div class="stat-value" data-stat="submissions">{{ festival_stats.submissions }}</div>
+                <div class="stat-label">اثر ثبت‌شده</div>
+                <span class="stat-note">روایت‌هایی که تاکنون به جشنواره رسیده‌اند</span>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" data-stat="participants">{{ festival_stats.participants }}</div>
+                <div class="stat-label">شرکت‌کننده</div>
+                <span class="stat-note">افراد یکتایی که اثر ارسال کرده‌اند</span>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon">📂</div>
+                <div class="stat-value" data-stat="categories">{{ festival_stats.categories }}</div>
+                <div class="stat-label">محور فعال</div>
+                <span class="stat-note">راه‌های مختلف برای روایت ایده شما</span>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" data-stat="approved">{{ festival_stats.approved }}</div>
+                <div class="stat-label">اثر تأییدشده</div>
+                <span class="stat-note">آثاری که بررسی اولیه را پشت سر گذاشته‌اند</span>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon">🔎</div>
+                <div class="stat-value" data-stat="pending">{{ festival_stats.pending }}</div>
+                <div class="stat-label">اثر در حال بررسی</div>
+                <span class="stat-note">آثار ثبت‌شده در مسیر داوری و بررسی</span>
+            </article>
+        </div>
+
+        <div class="stats-bottom">
+            <div class="category-stats">
+                <div class="mini-heading">
+                    <strong>آثار در هر محور</strong>
+                    <span>پربازدیدترین مسیرهای مشارکت را ببینید</span>
+                </div>
+                <div class="category-stat-list">
+                    {% for item in festival_stats.category_stats %}
+                    <div class="category-stat" data-category="{{ item.slug }}" data-count="{{ item.count }}">
+                        <div class="category-stat-top">
+                            <span><b>{{ item.icon }}</b> {{ item.title }}</span>
+                            <strong>{{ item.count }}</strong>
+                        </div>
+                        <div class="category-progress"><span style="width: {{ ((item.count / festival_stats.submissions) * 100) if festival_stats.submissions else 0 }}%"></span></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="join-card">
+                <span class="join-card-icon">✨</span>
+                <span class="eyebrow">جای شما خالی است</span>
+                <h3>هنوز داستان خود را ثبت نکرده‌اید؟</h3>
+                <p>لازم نیست اثر شما حرفه‌ای باشد؛ یک نگاه خلاقانه و یک روایت صادقانه کافی است.</p>
+                <a href="/submit" class="btn btn-primary">ارسال اثر من</a>
+            </div>
+        </div>
+
+        <div class="stats-live-note"><span class="live-dot"></span> آمار با ثبت آثار جدید به‌روزرسانی می‌شود.</div>
     </div>
 </section>
 
@@ -118,4 +199,5 @@
 {% endblock %}
 {% block scripts %}
 <script src="/static/js/countdown.js"></script>
+<script src="/static/js/stats.js"></script>
 {% endblock %}

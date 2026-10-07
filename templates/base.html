@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="جشنواره نفس‌های آینده؛ لحظه‌های ناب زندگی برای فردایی روشن‌تر">
     <title>{% block title %}{{ app_name }}{% endblock %}</title>
-    <link rel="icon" href="/static/images/logo.svg" type="image/svg+xml">
+    <link rel="icon" href="/static/images/logo.png?v=2" type="image/svg+xml">
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/components.css">
     <link rel="stylesheet" href="/static/css/responsive.css">
@@ -15,7 +15,7 @@
 <header class="site-header">
     <div class="container nav-wrap">
         <a class="brand" href="/">
-            <img src="/static/images/logo.svg" alt="لوگوی جشنواره">
+            <img src="/static/images/logo.png?v=2" alt="لوگوی جشنواره">
             <span>
                 <strong>نفس‌های آینده</strong>
                 <small>لحظه‌های ناب زندگی</small>
@@ -47,7 +47,7 @@
     <div class="container footer-grid">
         <div>
             <a class="brand footer-brand" href="/">
-                <img src="/static/images/logo.svg" alt="">
+                <img src="/static/images/logo.png?v=2" alt="">
                 <span><strong>جشنواره نفس‌های آینده</strong><small>با هم، فردایی روشن‌تر بسازیم</small></span>
             </a>
             <p>از یک لبخند کوچک تا یک آینده بزرگ؛ روایت زندگی را با ما شریک شوید.</p>
@@ -63,7 +63,14 @@
             <h4>شبکه‌های اجتماعی</h4>
             <div class="socials">
                 {% for social in social_links %}
-                <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.title }}">{{ social.icon }}</a>
+                <a href="{{ social.url }}"
+                target="_blank"
+                rel="noopener"
+                aria-label="{{ social.title }}">
+                    <img src="{{ social.icon }}"
+                        alt="{{ social.title }}"
+                        class="social-icon">
+                </a>
                 {% endfor %}
             </div>
         </div>

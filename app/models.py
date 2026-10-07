@@ -12,7 +12,7 @@ class Category(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     slug: Mapped[str] = mapped_column(String(80), unique=True, index=True)
     title: Mapped[str] = mapped_column(String(120))
-    icon: Mapped[str] = mapped_column(String(20), default="✦")
+    icon: Mapped[str] = mapped_column(String(500), default="✦")
     description: Mapped[str] = mapped_column(Text)
     rules: Mapped[str] = mapped_column(Text, default="")
 
@@ -31,7 +31,7 @@ class Prize(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(200))
     description: Mapped[str] = mapped_column(Text)
-    icon: Mapped[str] = mapped_column(String(20), default="🏆")
+    icon: Mapped[str] = mapped_column(String(500), default="🏆")
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 
 class ParticipantGroup(Base):
@@ -40,7 +40,7 @@ class ParticipantGroup(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(200))
     description: Mapped[str] = mapped_column(Text)
-    icon: Mapped[str] = mapped_column(String(20), default="👥")
+    icon: Mapped[str] = mapped_column(String(500), default="👥")
 
 class SocialLink(Base):
     __tablename__ = "social_links"
@@ -48,7 +48,7 @@ class SocialLink(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(100))
     url: Mapped[str] = mapped_column(String(500))
-    icon: Mapped[str] = mapped_column(String(20), default="◎")
+    icon: Mapped[str] = mapped_column(String(500), default="◎")
 
 class Submission(Base):
     __tablename__ = "submissions"

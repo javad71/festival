@@ -1,61 +1,321 @@
 from sqlalchemy import select
 from .models import Category, Poster, Prize, ParticipantGroup, SocialLink, Winner
 
+
 def seed_database(db):
-    if db.scalar(select(Category).limit(1)):
-        return
+    """
+    Seed/update festival content.
+
+    Existing records are updated instead of being skipped.
+    New records are inserted.
+    Existing IDs are preserved.
+    """
+
+    # ============================================================
+    # CATEGORIES
+    # ============================================================
 
     categories = [
-        Category(slug="photo", title="عکس", icon="📷",
-                 description="لحظه‌هایی واقعی از عشق، خانواده، امید و زندگی.",
-                 rules="اثر باید متعلق به شرکت‌کننده باشد. ارسال عکس با کیفیت مناسب و بدون محتوای خلاف قوانین جشنواره انجام شود."),
-        Category(slug="caricature", title="کاریکاتور", icon="🎨",
-                 description="نگاهی خلاقانه، طنزآمیز و انسانی به زندگی و آینده.",
-                 rules="اثر باید اصیل باشد و حقوق پدیدآورنده رعایت شود. آثار توهین‌آمیز یا ناقض حقوق اشخاص پذیرفته نمی‌شوند."),
-        Category(slug="poster", title="پوستر", icon="🖼️",
-                 description="یک پیام تصویری برای ساختن فردایی روشن‌تر.",
-                 rules="پوستر باید خوانا، خلاقانه و مرتبط با موضوع جشنواره باشد. استفاده از محتوای دارای حق نشر بدون اجازه مجاز نیست."),
-        Category(slug="drawing", title="نقاشی", icon="🖌️",
-                 description="تصویری از آینده از نگاه کودکان، نوجوانان و هنرمندان.",
-                 rules="آثار دستی یا دیجیتال پذیرفته می‌شوند. در آثار کودکان، اطلاعات قیم یا سرپرست باید با اجازه ارسال شود."),
-        Category(slug="short-media", title="رسانه کوتاه", icon="🎬",
-                 description="کلیپ کوتاه، روایت تصویری و لحظه‌ای که نفس امید را زنده می‌کند.",
-                 rules="ویدئو باید کوتاه و با فرمت MP4، MOV یا WEBM باشد. موسیقی و تصاویر دارای حق نشر باید مجوز مناسب داشته باشند."),
-        Category(slug="short-story", title="داستان کوتاه", icon="📖",
-                 description="روایتی کوتاه از عشق، خانواده، امید و آینده.",
-                 rules="داستان باید اصیل باشد و قبلاً بدون اجازه صاحب اثر منتشر نشده باشد. متن فارسی در قالب PDF ارسال شود."),
+        {
+            "slug": "photo",
+            "title": "عکس",
+            "icon": "📷",
+            "description": (
+                "ثبت لحظه‌هایی واقعی از لبخند و شادی، حس شیرین مادری، "
+                "ازدواج جوانان، خانواده و نشاط پدربزرگ‌ها و مادربزرگ‌ها "
+                "در کنار فرزندان، نوه‌ها و نتیجه‌ها."
+            ),
+            "rules": (
+                "۱. عکس‌ها می‌توانند با دوربین یا تلفن همراه گرفته شوند.\n"
+                "۲. هر متقاضی می‌تواند حداکثر ۳ اثر ارائه دهد.\n"
+                "۳. عکس‌ها باید با کیفیت 300 DPI و حداکثر حجم ۸ مگابایت باشند.\n"
+                "۴. حداقل رزولوشن عکس‌های موبایلی باید ۲۱ مگاپیکسل باشد.\n"
+                "۵. عکس‌ها باید دارای عنوان باشند.\n\n"
+                "موضوع عکس می‌تواند درباره محورهای زیر باشد:\n"
+                "• حس شیرین مادری\n"
+                "• لبخند و شادی مردم\n"
+                "• خانواده، پایگاه امن زندگی\n"
+                "• ازدواج جوانان\n"
+                "• نشاط پدربزرگ‌ها و مادربزرگ‌ها در کنار فرزندان، نوه‌ها و نتیجه‌ها"
+            ),
+        },
+        {
+            "slug": "caricature",
+            "title": "کاریکاتور",
+            "icon": "🎨",
+            "description": (
+                "نگاهی خلاقانه و هنرمندانه به لبخند، شادی، خانواده، "
+                "مادری، ازدواج جوانان و ارتباط صمیمانه نسل‌ها."
+            ),
+            "rules": (
+                "هر دانش‌آموز می‌تواند در این بخش شرکت کند و حداکثر ۳ اثر ارسال نماید.\n"
+                "اثر باید اصیل و متعلق به شرکت‌کننده باشد.\n"
+                "اثر باید مرتبط با موضوعات جشنواره باشد.\n"
+                "آثار توهین‌آمیز یا ناقض حقوق دیگران پذیرفته نمی‌شوند."
+            ),
+        },
+        {
+            "slug": "poster",
+            "title": "پوستر",
+            "icon": "🖼️",
+            "description": (
+                "خلق یک پیام تصویری اثرگذار برای نمایش لبخند، خانواده، "
+                "مادری، ازدواج جوانان و نشاط میان نسل‌های مختلف."
+            ),
+            "rules": (
+                "هر دانش‌آموز می‌تواند در این بخش شرکت کند و حداکثر ۳ اثر ارسال نماید.\n"
+                "پوستر باید خلاقانه، خوانا و مرتبط با موضوع جشنواره باشد.\n"
+                "اثر باید اصیل باشد و حقوق پدیدآورندگان رعایت شود.\n"
+                "استفاده از محتوای دارای حق نشر بدون اجازه مجاز نیست."
+            ),
+        },
+        {
+            "slug": "drawing",
+            "title": "نقاشی",
+            "icon": "🖌️",
+            "description": (
+                "تصویری از لبخند، مادری، خانواده، ازدواج و شادی "
+                "پدربزرگ‌ها و مادربزرگ‌ها در کنار فرزندان و نوه‌ها."
+            ),
+            "rules": (
+                "۱. اثر ارسالی باید روی بوم یا کاغذ مناسب اجرا شده باشد.\n"
+                "۲. تمام آثار ارسالی باید دارای امضا باشند.\n"
+                "۳. هر متقاضی می‌تواند ۳ اثر ارائه دهد.\n"
+                "۴. ثبت تصویر اثر در سامانه جشنواره و تحویل اصل اثر به دبیرخانه جشنواره الزامی است.\n\n"
+                "موضوع نقاشی می‌تواند درباره محورهای زیر باشد:\n"
+                "• حس شیرین مادری\n"
+                "• لبخند و شادی مردم\n"
+                "• خانواده، پایگاه امن زندگی\n"
+                "• ازدواج جوانان\n"
+                "• نشاط پدربزرگ‌ها و مادربزرگ‌ها در کنار فرزندان، نوه‌ها و نتیجه‌ها"
+            ),
+        },
+        {
+            "slug": "short-media",
+            "title": "فیلم کوتاه",
+            "icon": "🎬",
+            "description": (
+                "روایتی تصویری از حس شیرین مادری، لبخند و شادی مردم، "
+                "خانواده به‌عنوان پایگاه امن زندگی، ازدواج جوانان و "
+                "نشاط پدربزرگ‌ها و مادربزرگ‌ها در کنار فرزندان، نوه‌ها و نتیجه‌ها."
+            ),
+            "rules": (
+                "۱. زمان فیلم حداقل ۳ دقیقه و حداکثر ۱۵ دقیقه باشد.\n"
+                "۲. محدودیتی برای تعداد فیلم‌های ارسالی از یک فیلم‌ساز وجود ندارد.\n\n"
+                "موضوع فیلم می‌تواند درباره موارد زیر باشد:\n"
+                "• حس شیرین مادری\n"
+                "• لبخند و شادی مردم\n"
+                "• خانواده، پایگاه امن زندگی\n"
+                "• ازدواج جوانان\n"
+                "• نشاط پدربزرگ‌ها و مادربزرگ‌ها در کنار فرزندان، نوه‌ها و نتیجه‌ها\n\n"
+                "به فیلم‌های برتر براساس نظر هیئت داوران جوایز نقدی اهدا خواهد شد."
+            ),
+        },
+        {
+            "slug": "short-story",
+            "title": "داستان کوتاه",
+            "icon": "📖",
+            "description": (
+                "روایتی کوتاه و خلاقانه از لبخند، حس شیرین مادری، "
+                "ازدواج جوانان، خانواده به‌عنوان پناهگاه امن زندگی "
+                "و نشاط نسل‌های مختلف."
+            ),
+            "rules": (
+                "هر دانش‌آموز می‌تواند در این بخش شرکت کند و حداکثر ۳ اثر ارسال نماید.\n"
+                "داستان باید اصیل و متعلق به شرکت‌کننده باشد.\n"
+                "اثر باید مرتبط با موضوعات جشنواره باشد.\n"
+                "داستان باید در قالب PDF ارسال شود."
+            ),
+        },
     ]
-    db.add_all(categories)
+
+    for data in categories:
+        category = db.scalar(
+            select(Category).where(Category.slug == data["slug"])
+        )
+
+        if category:
+            # UPDATE existing record
+            category.title = data["title"]
+            category.icon = data["icon"]
+            category.description = data["description"]
+            category.rules = data["rules"]
+        else:
+            # INSERT new record
+            db.add(Category(**data))
+
+    # ============================================================
+    # POSTERS
+    # ============================================================
 
     posters = [
-        Poster(title="نفس‌های آینده", subtitle="برای فردایی روشن‌تر", image_path="/static/images/posters/poster-1.svg"),
-        Poster(title="آغاز یک زندگی", subtitle="قصه‌ای برای همیشه", image_path="/static/images/posters/poster-2.svg"),
-        Poster(title="امن‌ترین پناه", subtitle="خانواده", image_path="/static/images/posters/poster-3.svg"),
-        Poster(title="نسل‌های کنار هم", subtitle="از لبخند تا خاطره", image_path="/static/images/posters/poster-4.svg"),
+        {
+            "title": "نسل‌های کنار هم",
+            "subtitle": "لبخند، مادری، خانواده و نسل‌های کنار هم",
+            "image_path": "/static/images/posters/poster-1.jpg",
+        },
+        {
+            "title": "خانواده، پناهگاه امن زندگی",
+            "subtitle": "روایت عشق و زندگی",
+            "image_path": "/static/images/posters/poster-2.jpg",
+        },
+        {
+            "title": "حس شیرین مادری",
+            "subtitle": "در کنار هم برای فردایی روشن",
+            "image_path": "/static/images/posters/poster-3.jpg",
+        },
+        {
+            "title": "محورهای جشنواره",
+            "subtitle": "از لبخند کودکان تا نشاط پدربزرگ‌ها و مادربزرگ‌ها",
+            "image_path": "/static/images/posters/poster-4.jpg",
+        },
     ]
-    db.add_all(posters)
+
+    for data in posters:
+        poster = db.scalar(
+            select(Poster)
+            .where(Poster.image_path == data["image_path"])
+        )
+
+        if poster:
+            poster.title = data["title"]
+            poster.subtitle = data["subtitle"]
+        else:
+            db.add(Poster(**data))
+
+    # ============================================================
+    # PRIZES
+    # ============================================================
 
     prizes = [
-        Prize(title="نفر اول هر محور", description="تندیس جشنواره، لوح تقدیر و جایزه ویژه نقدی.", icon="🥇", sort_order=1),
-        Prize(title="نفر دوم هر محور", description="لوح تقدیر و جایزه نقدی.", icon="🥈", sort_order=2),
-        Prize(title="نفر سوم هر محور", description="لوح تقدیر و هدیه یادبود جشنواره.", icon="🥉", sort_order=3),
+        {
+            "sort_order": 1,
+            "title": "رده A",
+            "description": (
+                "در رشته‌های عکس، پوستر، کاریکاتور، داستان کوتاه و نقاشی: "
+                "۴۰ میلیون ریال\n"
+                "فیلم کوتاه: ۶۰ میلیون ریال"
+            ),
+            "icon": "🥇",
+        },
+        {
+            "sort_order": 2,
+            "title": "رده B",
+            "description": (
+                "در رشته‌های عکس، پوستر، کاریکاتور، داستان کوتاه و نقاشی: "
+                "۳۰ میلیون ریال\n"
+                "فیلم کوتاه: ۴۰ میلیون ریال"
+            ),
+            "icon": "🥈",
+        },
+        {
+            "sort_order": 3,
+            "title": "رده C",
+            "description": (
+                "در رشته‌های عکس، پوستر، کاریکاتور، داستان کوتاه و نقاشی: "
+                "۱۰ میلیون ریال\n"
+                "فیلم کوتاه: ۳۰ میلیون ریال"
+            ),
+            "icon": "🥉",
+        },
     ]
-    db.add_all(prizes)
+
+    for data in prizes:
+        prize = db.scalar(
+            select(Prize)
+            .where(Prize.sort_order == data["sort_order"])
+        )
+
+        if prize:
+            prize.title = data["title"]
+            prize.description = data["description"]
+            prize.icon = data["icon"]
+        else:
+            db.add(Prize(**data))
+
+    # ============================================================
+    # PARTICIPANT GROUPS
+    # ============================================================
 
     groups = [
-        ParticipantGroup(title="کودکان و نوجوانان", description="با همراهی والدین یا سرپرست قانونی.", icon="🧒"),
-        ParticipantGroup(title="جوانان", description="برای علاقه‌مندان به هنر، رسانه و روایت.", icon="🌱"),
-        ParticipantGroup(title="خانواده‌ها", description="ارسال آثار خانوادگی و تجربه‌های مشترک.", icon="👨‍👩‍👧‍👦"),
-        ParticipantGroup(title="هنرمندان و فعالان فرهنگی", description="برای عکاسان، طراحان، نویسندگان و تولیدکنندگان محتوا.", icon="🎭"),
+        {
+            "title": "دانش‌آموزان ابتدایی",
+            "description": "ویژه دانش‌آموزان دوره ابتدایی.",
+            "icon": "🧒",
+        },
+        {
+            "title": "دانش‌آموزان متوسطه اول",
+            "description": "ویژه دانش‌آموزان دوره متوسطه اول.",
+            "icon": "📚",
+        },
+        {
+            "title": "دانش‌آموزان متوسطه دوم",
+            "description": "ویژه دانش‌آموزان دوره متوسطه دوم.",
+            "icon": "🎓",
+        },
+        {
+            "title": "جوانان",
+            "description": "برای علاقه‌مندان به هنر، رسانه و روایت.",
+            "icon": "🌱",
+        },
+        {
+            "title": "خانواده‌ها",
+            "description": "برای روایت خانواده و تجربه‌های مشترک میان نسل‌ها.",
+            "icon": "👨‍👩‍👧‍👦",
+        },
+        {
+            "title": "هنرمندان و فعالان فرهنگی",
+            "description": (
+                "برای عکاسان، طراحان، نویسندگان و تولیدکنندگان "
+                "آثار هنری و رسانه‌ای."
+            ),
+            "icon": "🎭",
+        },
     ]
-    db.add_all(groups)
+
+    for data in groups:
+        group = db.scalar(
+            select(ParticipantGroup)
+            .where(ParticipantGroup.title == data["title"])
+        )
+
+        if group:
+            group.description = data["description"]
+            group.icon = data["icon"]
+        else:
+            db.add(ParticipantGroup(**data))
+
+    # ============================================================
+    # SOCIAL LINKS
+    # ============================================================
 
     socials = [
-        SocialLink(title="اینستاگرام", url="https://instagram.com/", icon="◎"),
-        SocialLink(title="تلگرام", url="https://t.me/", icon="✈"),
-        SocialLink(title="آپارات", url="https://www.aparat.com/", icon="▶"),
-        SocialLink(title="لینکدین", url="https://www.linkedin.com/", icon="in"),
+        {
+            "title": "تلگرام",
+            "url": "https://t.me/shabakesalamat1",
+            "icon": "/static/images/icons/telegram.webp",
+        },
+        {
+            "title": "روبیکا",
+            "url": "https://www.rubika.ir/roshd_malekshahi",
+            "icon": "/static/images/icons/rubika.png",
+        },
     ]
-    db.add_all(socials)
+
+    for data in socials:
+        social = db.scalar(
+            select(SocialLink)
+            .where(SocialLink.title == data["title"])
+        )
+
+        if social:
+            social.url = data["url"]
+            social.icon = data["icon"]
+        else:
+            db.add(SocialLink(**data))
+
+    # ============================================================
+    # SAVE ALL CHANGES
+    # ============================================================
 
     db.commit()

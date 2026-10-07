@@ -5,19 +5,27 @@ services:
     environment:
       POSTGRES_DB: festival
       POSTGRES_USER: festival
-      POSTGRES_PASSWORD: change-this-password
+      POSTGRES_PASSWORD: admin891230514javad4510044501
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U festival -d festival"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   app:
     build: .
     restart: unless-stopped
-    env_file: .env
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgresql+psycopg://festival:change-this-password@db:5432/festival
-      SESSION_HTTPS_ONLY: "true"
+      DATABASE_URL: postgresql+psycopg://festival:admin891230514javad4510044501@db:5432/festival
+      SESSION_HTTPS_ONLY: "false"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ./uploads:/app/uploads
 
@@ -25,7 +33,8 @@ services:
     image: nginx:1.27-alpine
     restart: unless-stopped
     depends_on:
-      - app
+      app:
+        condition: service_started
     ports:
       - "80:80"
       - "443:443"

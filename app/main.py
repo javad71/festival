@@ -11,7 +11,7 @@ from .routers import public, submissions, admin
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-app = FastAPI(title=APP_NAME, description="سامانه جشنواره نفس‌های آینده", version="2.0.0")
+app = FastAPI(title=APP_NAME, description="سامانه جشنواره نفس‌های آینده", version="2.1.0")
 app.add_middleware(
     SessionMiddleware,
     secret_key=SECRET_KEY,
