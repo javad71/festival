@@ -8,7 +8,7 @@ load_dotenv(BASE_DIR / ".env")
 APP_NAME = os.getenv("APP_NAME", "جشنواره نفس‌های آینده")
 SECRET_KEY = os.getenv("SECRET_KEY", "development-secret-change-me")
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'festival.db'}")
-MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "50"))
+MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "100"))
 UPLOAD_DIR = BASE_DIR / os.getenv("UPLOAD_DIR", "uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
